@@ -327,9 +327,15 @@ function openChat(key) {
   document.getElementById('chatRole').textContent = m.role;
   document.getElementById('chatName').textContent = m.name;
   document.getElementById('chatVoices').textContent = m.voices;
-  document.getElementById('quickPrompts').innerHTML = m.quickPrompts.map(p =>
-    `<button class="qp-btn" onclick="useQP(${JSON.stringify(p)})">${p}</button>`
-  ).join('');
+  const qpContainer = document.getElementById('quickPrompts');
+  qpContainer.innerHTML = '';
+  m.quickPrompts.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'qp-btn';
+    btn.textContent = p;
+    btn.addEventListener('click', () => useQP(p));
+    qpContainer.appendChild(btn);
+  });
   const msgs = document.getElementById('messages');
   msgs.innerHTML = '';
   appendMsg('council', m, m.opening);
@@ -356,7 +362,7 @@ async function sendMessage() {
     const res = await fetch('/api/council', {
       method:'POST',
       headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1000, system: m.systemPrompt, messages: history })
+      body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:1024, system: m.systemPrompt, messages: history })
     });
     const data = await res.json();
     removeTyping(tid);
