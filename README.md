@@ -4,11 +4,12 @@ AI-powered leadership council for Yeside & Co. ventures.
 
 ## Deploy to Vercel
 
-### 1. Add your Anthropic API Key
+### 1. Add your Gemini API Key
 In Vercel dashboard → Project → Settings → Environment Variables:
 ```
-ANTHROPIC_API_KEY = sk-ant-your-key-here
+GEMINI_API_KEY = your-key-here
 ```
+Get a free key at https://aistudio.google.com/apikey
 
 ### 2. Deploy
 ```bash
@@ -47,4 +48,4 @@ yeside-council/
 - 🏛 Policy & Trust — Bosun Tijani · Nnenna Nwakanma
 - ⬡ Full Council — All voices together
 
-Powered by Claude Sonnet 4.6
+Powered by Google Gemini 2.5 Flash
