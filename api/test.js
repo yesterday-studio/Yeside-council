@@ -1,32 +1,34 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  const apiKey = process.env.GROQ_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
     return res.status(200).json({
       status: 'ERROR',
-      problem: 'GROQ_API_KEY is not set in Vercel environment variables',
-      fix: 'Go to Vercel > Project > Settings > Environment Variables and add GROQ_API_KEY'
+      problem: 'GEMINI_API_KEY is not set in Vercel environment variables',
+      fix: 'Go to Vercel > Project > Settings > Environment Variables and add GEMINI_API_KEY'
     });
   }
 
   try {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: 'llama-3.1-8b-instant',
-        max_tokens: 50,
-        messages: [
-          { role: 'system', content: 'You are a helpful assistant.' },
-          { role: 'user', content: 'Say exactly: Yeside Council is live!' }
-        ]
-      })
-    });
+    const response = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey
+        },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: 'You are a helpful assistant.' }] },
+          contents: [
+            { role: 'user', parts: [{ text: 'Say exactly: Yeside Council is live!' }] }
+          ],
+          generationConfig: { maxOutputTokens: 50 }
+        })
+      }
+    );
 
     const data = await response.json();
 
@@ -38,11 +40,11 @@ export default async function handler(req, res) {
       });
     }
 
-    const text = data.choices?.[0]?.message?.content;
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
     return res.status(200).json({
       status: 'SUCCESS',
       message: text,
-      model: 'llama-3.1-8b-instant via Groq',
+      model: 'gemini-2.5-flash',
       free: true
     });
 
